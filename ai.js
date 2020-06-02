@@ -44,5 +44,56 @@
  */
 
 function aiSelect() {
-  return random(emptyCells(board));
+  const center = floor(gridSize / 2);
+  const empties = emptyCells(board);
+  
+  // Step 1: if it's an empty board, take the center (assumes an odd-numbered gridSize)
+  if (empties.length === gridSize * gridSize) {
+    report('taking center cell');
+    return cell2d(center, center);
+  }
+
+  // Step 2: if there's only one cell left, you have to take it
+  if (empties.length === 1) {
+    report('only one cell left...');
+    return empties[0];
+  }
+
+  // Step 3: look at all the rows. If any of them are one short of being complete with all the same mark, take it!
+  // This works for a win case and a defenseive maneuver.
+  const rowCheck = rowFinder(getRows(), false);
+  report(`rowCheck: ${rowCheck}`);
+  if (rowCheck !== undefined) {
+    report(`Found a near-complete row. Playing ${rowCheck}`);
+    return rowCheck;
+  }
+
+  // Step 4: do the same thing with columns
+  const colCheck = rowFinder(getColumns(), true);
+  report(`colCheck: ${colCheck}`);
+  if (colCheck !== undefined) {
+    report(`Found a near-complete column. Playing ${colCheck}`);
+    return colCheck;
+  }
+
+  // Step 5: beyond this, choose at random.
+  report('Choosing at random');
+  return random(empties);
+}
+
+function rowFinder(rows, isActuallyColumns) {
+  for (let r = 0; r < gridSize; r++) {
+    const row = rows[r];
+    if (emptyCells(row).length === 1) {
+      // if the row has both marks in it, it's not a risk. If it doesn't, then it MUST be all the same!
+      const containsBoth = row.includes(players[0]) && row.includes(players[1]);
+      if (!containsBoth) {
+        if (isActuallyColumns === true) {
+          return emptyCells(row)[0] * gridSize + r;
+        } else {
+          return r * gridSize + emptyCells(row)[0];
+        }
+      }
+    }
+  }
 }
