@@ -62,7 +62,6 @@ function aiSelect() {
   // Step 3: look at all the rows. If any of them are one short of being complete with all the same mark, take it!
   // This works for a win case and a defenseive maneuver.
   const rowCheck = rowFinder(getRows(), false);
-  report(`rowCheck: ${rowCheck}`);
   if (rowCheck !== undefined) {
     report(`Found a near-complete row. Playing ${rowCheck}`);
     return rowCheck;
@@ -70,7 +69,6 @@ function aiSelect() {
 
   // Step 4: do the same thing with columns
   const colCheck = rowFinder(getColumns(), true);
-  report(`colCheck: ${colCheck}`);
   if (colCheck !== undefined) {
     report(`Found a near-complete column. Playing ${colCheck}`);
     return colCheck;
